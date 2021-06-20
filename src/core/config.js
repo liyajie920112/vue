@@ -1,5 +1,6 @@
 /* @flow */
 
+// 全局配置config
 import {
   no,
   noop,

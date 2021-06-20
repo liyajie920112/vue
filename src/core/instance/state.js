@@ -36,6 +36,12 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
+/**
+ * 用来做一层代理, 通过Object.defineProperty给vm添加一个key
+ * @param target vm
+ * @param sourceKey _data
+ * @param key data的属性
+ */
 export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter () {
     return this[sourceKey][key]
@@ -43,6 +49,7 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.set = function proxySetter (val) {
     this[sourceKey][key] = val
   }
+  // target就是vm, 这句话就是把key挂载到vm上, vm.key 则回去调用sharedPropertyDefinition.get, 这样最终执行的就是vm._data.key
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
@@ -124,13 +131,14 @@ function initData (vm: Component) {
     )
   }
   // proxy data on instance
-  const keys = Object.keys(data)
+  const keys = Object.keys(data) // 获取到data对象的属性名称 - 数组
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
+      // 判断方法名中是否有和data中的属性名一样的, 目的是因为methods和data的属性都会挂载到vm
       if (methods && hasOwn(methods, key)) {
         warn(
           `Method "${key}" has already been defined as a data property.`,
@@ -144,7 +152,7 @@ function initData (vm: Component) {
         `Use prop default value instead.`,
         vm
       )
-    } else if (!isReserved(key)) {
+    } else if (!isReserved(key)) { // 是否是以 $ or _ 开头, 所以说: 如果data中有的第一层有$/_开头的属性则会报错
       proxy(vm, `_data`, key)
     }
   }
