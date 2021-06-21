@@ -159,7 +159,7 @@ export function cached<F: Function> (fn: F): F {
 }
 
 /**
- * Camelize a hyphen-delimited string.
+ * Camelize a hyphen-delimited string. // 驼峰命名, 首字母小写的驼峰
  */
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str: string): string => {
@@ -167,7 +167,7 @@ export const camelize = cached((str: string): string => {
 })
 
 /**
- * Capitalize a string.
+ * Capitalize a string. // 驼峰命名, 首字母大写的驼峰
  */
 export const capitalize = cached((str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1)

@@ -96,6 +96,7 @@ export function _createElement (
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
+    // isReservedTag在element.js中定义了, 用于判断是否是原生html标签或者svg标签, 用来判断是否支持.native修饰符
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn) && data.tag !== 'component') {
@@ -104,14 +105,17 @@ export function _createElement (
           context
         )
       }
+      // 创建一个普通的VNode
       vnode = new VNode(
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       )
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
+      // isDef 是 v !== null && v !== undefined
       // component
+      // 如果是自定义的组件, 则创建一个自定义组件的VNode
       vnode = createComponent(Ctor, data, context, children, tag)
-    } else {
+    } else { // 否则创建一个未知标签的VNode
       // unknown or unlisted namespaced elements
       // check at runtime because it may get assigned a namespace when its
       // parent normalizes children
